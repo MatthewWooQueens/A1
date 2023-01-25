@@ -30,7 +30,10 @@ var_ordering == a function with the following template
 def ord_dh(csp):
     ''' return variables according to the Degree Heuristic '''
     # IMPLEMENT
-    pass
+    vars = csp.get_all_vars()
+    big = (vars[0], csp.get_cons_with_var())
+    for var in vars:
+        if len(csp.get_cons_with_var()) > big
 
 def ord_mrv(csp):
     ''' return variable according to the Minimum Remaining Values heuristic '''

@@ -1,7 +1,7 @@
 # =============================
-# Student Names:
-# Group ID:
-# Date:
+# Student Names: 
+# Group ID: 69
+# Date: January 22, 2023
 # =============================
 # CISC 352 - W23
 # propagators.py
@@ -92,8 +92,32 @@ def prop_FC(csp, newVar=None):
        only one uninstantiated variable. Remember to keep
        track of all pruned variable,value pairs and return '''
     #IMPLEMENT
-    
-    pass
+    if not newVar:
+        pruned = []
+        for c in csp.get_all_nary_cons(1):
+            if c.get_n_unasgn() == 1:
+                var = c.get_scope()
+                dom = var[0].cur_domain()
+                for val in dom:
+                    if not c.check_tuple([val]):
+                        var.prune_value(val)
+                        pruned.append((var, val))
+                    if var.cur_domain_size() == 0:
+                        return False, pruned
+        return True, pruned
+    vals = []
+    for c in csp.get_cons_with_var(newVar):
+        if c.get_n_unasgn() == 1:
+            vars = c.get_scope()
+            for var in vars:
+                temp = newVar.get_assigned_value()
+                if var.in_cur_domain(temp):
+                    vals.append((var,temp))
+                    var.prune_value(temp)
+                if var.cur_domain_size() == 0:
+                    return False, vals
+    return True, vals
+
 
 
 def prop_GAC(csp, newVar=None):
@@ -101,4 +125,40 @@ def prop_GAC(csp, newVar=None):
        processing all constraints. Otherwise we do GAC enforce with
        constraints containing newVar on GAC Queue'''
     #IMPLEMENT
-    pass
+    if not newVar:
+        pruned = []
+        queue = csp.get_all_cons()
+        while len(queue) != 0:
+            first = queue.pop(0)
+            removed = False
+            vars = first.get_scope()
+            for x in vars[0].cur_domain():
+                if not first.check_var_val(vars[0], x):
+                    pruned.append((vars[0], x))
+                    vars[0].prune_value(x)
+                    removed = True
+                if vars[0].cur_domain_size == 0:
+                    return False, pruned
+            if removed:
+                for c in csp.get_cons_with_var(vars[0]):
+                    if c.get_scope()[0] != vars[0]:
+                        queue.append(c)
+        return True, pruned
+    pruned = []
+    queue = csp.get_cons_with_var(newVar)
+    while len(queue) != 0:
+        first = queue.pop(0)
+        removed = False
+        vars = first.get_scope()
+        for x in vars[0].cur_domain():
+            if not first.check_var_val(vars[0], x):
+                pruned.append((vars[0], x))
+                vars[0].prune_value(x)
+                removed = True
+            if vars[0].cur_domain_size == 0:
+                return False, pruned
+        if removed:
+            for c in csp.get_cons_with_var(vars[0]):
+                if c.get_scope()[0] != vars[0]:
+                    queue.append(c)
+    return True, pruned
