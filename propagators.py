@@ -1,5 +1,5 @@
 # =============================
-# Student Names: 
+# Student Names: Justin Woo, Attila Tavakolli, Matthew Woo
 # Group ID: 69
 # Date: January 22, 2023
 # =============================
