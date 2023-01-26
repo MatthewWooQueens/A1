@@ -46,4 +46,9 @@ def ord_dh(csp):
 def ord_mrv(csp):
     ''' return variable according to the Minimum Remaining Values heuristic '''
     # IMPLEMENT
-    pass
+    ordList = csp.get_all_unasgn_vars()
+    next = ordList[0]
+    for var in ordList:
+        if len(var.cur_domain()) < len(next.cur_domain()):
+            next = var
+    return next
