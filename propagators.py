@@ -109,13 +109,14 @@ def prop_FC(csp, newVar=None):
     for c in csp.get_cons_with_var(newVar):
         if c.get_n_unasgn() == 1:
             vars = c.get_scope()
+            temp = newVar.get_assigned_value()
             for var in vars:
-                temp = newVar.get_assigned_value()
-                if var.in_cur_domain(temp):
-                    vals.append((var,temp))
-                    var.prune_value(temp)
-                if var.cur_domain_size() == 0:
-                    return False, vals
+                if var != newVar:
+                    if var.in_cur_domain(temp):
+                        vals.append((var,temp))
+                        var.prune_value(temp)
+                    if var.cur_domain_size() == 0:
+                        return False, vals
     return True, vals
 
 
