@@ -111,7 +111,7 @@ def prop_FC(csp, newVar=None):
             vars = c.get_scope()
             temp = newVar.get_assigned_value()
             for var in vars:
-                if var != newVar:
+                if var != newVar and not var.is_assigned():
                     if var.in_cur_domain(temp):
                         vals.append((var,temp))
                         var.prune_value(temp)

@@ -87,7 +87,27 @@ from cspbase import *
 
 def binary_ne_grid(cagey_grid):
     ##IMPLEMENT
-    pass
+    csp = CSP("binary_cagey")
+    var_array = []
+    n = cagey_grid[0]
+    dom = [i for i in range(1, n + 1)]
+    var_array.append(Variable("1,1", dom))
+    for y in range(n):
+        for x in range(n):
+            # Constraint created using vars ahead of current coordinate. 
+            # Need to prevent constraint from being made if next variable coordinate is out of bounds.
+            if x != n-1:
+                var1 = Variable("{},{}".format(x+2,y+1), dom)
+                var_array.append(var1)
+                csp.add_var(var1)
+                csp.add_constraint(Constraint("V{},V{}".format(x + (n*y), x + (n*y) + 1), [var_array[x + (n*y)], var1]))
+                csp.add_constraint(Constraint("V{},V{}".format(x + (n*y), x + (n*y) + 1), [var1, var_array[x + (n*y)]]))
+            if y != n-1:
+                var2 = Variable("{},{}".format(x+1,y+2), dom)
+                var_array.append(var2)
+                csp.add_var(var2)
+                csp.add_constraint(Constraint("V{},V{}".format(x + (n*y), x + (n*y) + 1), [var_array[x + (n*y)], var1]))
+                csp.add_constraint(Constraint("V{},V{}".format(x + (n*y), x + (n*y) + 1), [var1, var_array[x + (n*y)]]))
 
 
 def nary_ad_grid(cagey_grid):
