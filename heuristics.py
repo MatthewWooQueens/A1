@@ -37,10 +37,10 @@ def ord_dh(csp):
         num = 0
         for con in cons:
         #Greater than 1 as there must be another unassigned var in constraint beside current var
-            if con.get_n_anasgn > 1:
+            if con.get_n_unasgn() > 1:
                 num += 1
         if num > big[1]:
-            big = (var, cons)
+            big = (var, num)
     return big[0]
 
 def ord_mrv(csp):
