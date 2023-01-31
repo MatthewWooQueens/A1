@@ -84,30 +84,24 @@ An example of a 3x3 puzzle would be defined as:
 '''
 
 from cspbase import *
+import itertools
 
 def binary_ne_grid(cagey_grid):
     ##IMPLEMENT
-    csp = CSP("binary_cagey")
     var_array = []
     n = cagey_grid[0]
     dom = [i for i in range(1, n + 1)]
     var_array.append(Variable("1,1", dom))
-    for y in range(n):
-        for x in range(n):
-            # Constraint created using vars ahead of current coordinate. 
-            # Need to prevent constraint from being made if next variable coordinate is out of bounds.
-            if x != n-1:
-                var1 = Variable("{},{}".format(x+2,y+1), dom)
-                var_array.append(var1)
-                csp.add_var(var1)
-                csp.add_constraint(Constraint("V{},V{}".format(x + (n*y), x + (n*y) + 1), [var_array[x + (n*y)], var1]))
-                csp.add_constraint(Constraint("V{},V{}".format(x + (n*y), x + (n*y) + 1), [var1, var_array[x + (n*y)]]))
-            if y != n-1:
-                var2 = Variable("{},{}".format(x+1,y+2), dom)
-                var_array.append(var2)
-                csp.add_var(var2)
-                csp.add_constraint(Constraint("V{},V{}".format(x + (n*y), x + (n*y) + 1), [var_array[x + (n*y)], var1]))
-                csp.add_constraint(Constraint("V{},V{}".format(x + (n*y), x + (n*y) + 1), [var1, var_array[x + (n*y)]]))
+    coords = itertools.combinations_with_replacement(dom,2)
+    for x in coords:
+        var_array.append(Variable(x[0]+","+x[1],dom))
+    csp = CSP("binary_cagey",var_array)
+    constraintsPairs=itertools.combinations(var_array,2)
+    for x in constraintsPairs:
+        Constraint(f"({x[0].name}),({x[1].name})",[x[0],x[1]])
+        csp.add_constraint(Constraint)
+    return csp,var_array
+
 
 
 def nary_ad_grid(cagey_grid):
