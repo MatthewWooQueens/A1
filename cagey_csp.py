@@ -92,7 +92,8 @@ def binary_ne_grid(cagey_grid):
     n = cagey_grid[0]
     dom = [i for i in range(1, n + 1)]
     var_array.append(Variable("1,1", dom))
-    coords = itertools.combinations_with_replacement(dom,2)
+    coords = itertools.product(dom,dom,2)
+    print(coords)
     for x in coords:
         var_array.append(Variable(x[0]+","+x[1],dom))
     csp = CSP("binary_cagey",var_array)
