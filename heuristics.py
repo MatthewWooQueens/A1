@@ -31,7 +31,7 @@ def ord_dh(csp):
     ''' return variables according to the Degree Heuristic '''
     # IMPLEMENT
     vars = csp.get_all_unasgn_vars()
-    big = (None, 0)
+    big = (vars[0], 0)
     for var in vars:
         cons = csp.get_cons_with_var(var)
         num = 0

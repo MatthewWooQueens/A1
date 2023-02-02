@@ -91,17 +91,26 @@ def binary_ne_grid(cagey_grid):
     var_array = []
     n = cagey_grid[0]
     dom = [i for i in range(1, n + 1)]
-    var_array.append(Variable("1,1", dom))
-    coords = itertools.combinations_with_replacement(dom,2)
-    for x in coords:
-        var_array.append(Variable(x[0]+","+x[1],dom))
-    csp = CSP("binary_cagey",var_array)
-    constraintsPairs=itertools.combinations(var_array,2)
-    for x in constraintsPairs:
-        Constraint(f"({x[0].name}),({x[1].name})",[x[0],x[1]])
-        csp.add_constraint(Constraint)
-    return csp,var_array
+    sat_tuples = [[o, x] for (o, x) in itertools.permutations(range(1, n+1), 2)]
+    arr = itertools.product(dom, dom)
+    var_array = [Variable("Cell({},{})".format(x,y), dom) for (x,y) in arr]
+    csp = CSP("binary_cagey", var_array)
+    for i in range(n):
+        arr1 = var_array[i * n : (i+1) * n]
+        arr2 = [var_array[j] for j in range(i, n*n, n)]
+        for (o, x) in itertools.combinations(arr1, 2):
+            con = Constraint("C({},{})".format(o, x), [o , x])
+            con.add_satisfying_tuples(sat_tuples)
+            csp.add_constraint(con)
+        for (o, x) in itertools.combinations(arr2, 2):
+            con = Constraint("C({},{})".format(o, x), [o , x])
+            con.add_satisfying_tuples(sat_tuples)
+            csp.add_constraint(con)
+        
+    
+    #print(var_array)
 
+    return csp, var_array
 
 
 def nary_ad_grid(cagey_grid):
