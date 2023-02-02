@@ -70,6 +70,7 @@
 
          for gac we initialize the GAC queue with all constraints containing V.
    '''
+import itertools
 
 def prop_BT(csp, newVar=None):
     '''Do plain backtracking propagation. That is, do no
@@ -126,7 +127,7 @@ def prop_GAC(csp, newVar=None):
        processing all constraints. Otherwise we do GAC enforce with
        constraints containing newVar on GAC Queue'''
     #IMPLEMENT
-    if not newVar:
+    '''if not newVar:
         pruned = []
         queue = csp.get_all_cons()
         while len(queue) != 0:
@@ -162,4 +163,35 @@ def prop_GAC(csp, newVar=None):
             for c in csp.get_cons_with_var(vars[0]):
                 if c.get_scope()[0] != vars[0]:
                     queue.append(c)
-    return True, pruned
+    return True, pruned'''
+    pruned = []
+    queue = []
+    if not newVar: #newVar = None
+        startCons = csp.get_all_cons()
+
+    else:
+        startCons = csp.get_cons_with_var(newVar)
+    
+    for x in startCons: #Set up hyper arcs
+        for var in x.get_scope():
+            queue.append((var,x))
+    
+    while len(queue) != 0:
+        #print(queue[0])
+        con = queue.pop(0) #con equals constraint in current hyper arc
+        var = con[0] #var in the con
+        removed = False
+        for x in var.cur_domain():
+            if not con[1].check_var_val(var,x):
+                removed = True
+                pruned.append((var,x)) 
+                var.prune_value(x)
+        
+        if removed: #If a value was removed then check neighbours
+            for x in csp.get_cons_with_var(var):
+                for k in x.get_scope():
+                    if ((k,x) not in queue) and (k != var) and not k.is_assigned():
+                        queue.append((k,x)) #Add hyper arc to queue
+    return csp, pruned
+
+
