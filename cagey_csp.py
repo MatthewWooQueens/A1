@@ -88,27 +88,26 @@ import itertools
 
 def binary_ne_grid(cagey_grid):
     ##IMPLEMENT
-    var_array = []
-    n = cagey_grid[0]
-    dom = [i for i in range(1, n + 1)]
-    sat_tuples = [[o, x] for (o, x) in itertools.permutations(range(1, n+1), 2)]
+    var_array = [] #List to hold all the variables of the grid
+    n = cagey_grid[0] #Dimension of the grid
+    dom = [i for i in range(1, n + 1)] #Domain of the variables
+    sat_tuples = [[o, x] for (o, x) in itertools.permutations(range(1, n+1), 2)] #Satisfiable tuples of the binary constraints
+    #Getting all possible variable cells
     arr = itertools.product(dom, dom)
     var_array = [Variable("Cell({},{})".format(x,y), dom) for (x,y) in arr]
     csp = CSP("binary_cagey", var_array)
     for i in range(n):
-        arr1 = var_array[i * n : (i+1) * n]
-        arr2 = [var_array[j] for j in range(i, n*n, n)]
-        for (o, x) in itertools.combinations(arr1, 2):
-            con = Constraint("C({},{})".format(o, x), [o , x])
+        #Create the binary constraints
+        rowc = var_array[i * n : (i+1) * n]
+        colc = [var_array[j] for j in range(i, n*n, n)]
+        for (o, x) in itertools.combinations(rowc, 2):
+            con = Constraint("C({},{})".format(o, x), [o, x])
             con.add_satisfying_tuples(sat_tuples)
             csp.add_constraint(con)
-        for (o, x) in itertools.combinations(arr2, 2):
-            con = Constraint("C({},{})".format(o, x), [o , x])
+        for (o, x) in itertools.combinations(colc, 2):
+            con = Constraint("C({},{})".format(o, x), [o, x])
             con.add_satisfying_tuples(sat_tuples)
             csp.add_constraint(con)
-        
-    
-    #print(var_array)
 
     return csp, var_array
 
