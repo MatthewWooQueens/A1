@@ -93,32 +93,40 @@ def prop_FC(csp, newVar=None):
        only one uninstantiated variable. Remember to keep
        track of all pruned variable,value pairs and return '''
     #IMPLEMENT
+    prune = []
+    con = []
     if not newVar:
-        pruned = []
-        for c in csp.get_all_nary_cons(1):
+        #print("trash-----------------------------------")
+        con = csp.get_all_nary_cons(1)
+        #for x in con:
+            #print(x.get_scope())
+        for c in con:
             if c.get_n_unasgn() == 1:
-                var = c.get_scope()
-                dom = var[0].cur_domain()
-                for val in dom:
-                    if not c.check_tuple([val]):
-                        var.prune_value(val)
-                        pruned.append((var, val))
-                    if var.cur_domain_size() == 0:
-                        return False, pruned
-        return True, pruned
-    vals = []
-    for c in csp.get_cons_with_var(newVar):
-        if c.get_n_unasgn() == 1:
-            vars = c.get_scope()
-            temp = newVar.get_assigned_value()
-            for var in vars:
-                if var != newVar and not var.is_assigned():
-                    if var.in_cur_domain(temp):
-                        vals.append((var,temp))
-                        var.prune_value(temp)
-                    if var.cur_domain_size() == 0:
-                        return False, vals
-    return True, vals
+                #print(c.get_scope())
+                var = c.get_unasgn_vars()
+                for val in var.cur_domain():
+                    pass
+        return True, prune
+    #print("balls-----------------------------------")
+    con = csp.get_cons_with_var(newVar)
+    '''for x in con:
+        print(x.get_scope())
+    print("----------------------------")'''
+    #print(csp.get_all_unasgn_vars())
+    for c in con:
+        for var in c.get_unasgn_vars():
+            for val in var.cur_domain():
+                if not c.check_var_val(var,val):
+                    prune.append((var,val))
+                    var.prune_value(val)
+            if var.cur_domain_size() == 0:
+                return False, prune
+
+    return True, prune
+
+            
+
+
 
 
 
@@ -127,43 +135,6 @@ def prop_GAC(csp, newVar=None):
        processing all constraints. Otherwise we do GAC enforce with
        constraints containing newVar on GAC Queue'''
     #IMPLEMENT
-    '''if not newVar:
-        pruned = []
-        queue = csp.get_all_cons()
-        while len(queue) != 0:
-            first = queue.pop(0)
-            removed = False
-            vars = first.get_scope()
-            for x in vars[0].cur_domain():
-                if not first.check_var_val(vars[0], x):
-                    pruned.append((vars[0], x))
-                    vars[0].prune_value(x)
-                    removed = True
-                if vars[0].cur_domain_size == 0:
-                    return False, pruned
-            if removed:
-                for c in csp.get_cons_with_var(vars[0]):
-                    if c.get_scope()[0] != vars[0]:
-                        queue.append(c)
-        return True, pruned
-    pruned = []
-    queue = csp.get_cons_with_var(newVar)
-    while len(queue) != 0:
-        first = queue.pop(0)
-        removed = False
-        vars = first.get_scope()
-        for x in vars[0].cur_domain():
-            if not first.check_var_val(vars[0], x):
-                pruned.append((vars[0], x))
-                vars[0].prune_value(x)
-                removed = True
-            if vars[0].cur_domain_size == 0:
-                return False, pruned
-        if removed:
-            for c in csp.get_cons_with_var(vars[0]):
-                if c.get_scope()[0] != vars[0]:
-                    queue.append(c)
-    return True, pruned'''
     pruned = []
     queue = []
     if not newVar: #newVar = None
