@@ -1,7 +1,7 @@
 # =============================
-# Student Names:
-# Group ID:
-# Date:
+# Student Names: Justin Woo, Attila Tavakolli, Matthew Woo
+# Group ID: 69
+# Date: January 22, 2023
 # =============================
 # CISC 352 - W23
 # heuristics.py

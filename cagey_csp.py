@@ -1,7 +1,7 @@
 # =============================
-# Student Names:
-# Group ID:
-# Date:
+# Student Names: Justin Woo, Attila Tavakolli, Matthew Woo
+# Group ID: 69
+# Date: January 22, 2023
 # =============================
 # CISC 352 - W23
 # cagey_csp.py
@@ -85,6 +85,9 @@ An example of a 3x3 puzzle would be defined as:
 
 from cspbase import *
 import itertools
+import operator
+from collections import defaultdict
+from math import prod
 
 def binary_ne_grid(cagey_grid):
     ##IMPLEMENT
@@ -109,6 +112,7 @@ def binary_ne_grid(cagey_grid):
             con.add_satisfying_tuples(sat_tuples)
             csp.add_constraint(con)
 
+    #print(var_array)
     return csp, var_array
 
 
@@ -117,5 +121,40 @@ def nary_ad_grid(cagey_grid):
     pass
 
 def cagey_csp_model(cagey_grid):
-    ##IMPLEMENT
-    pass
+    ## Implemented using binary_ne_grid
+    csp, var_array = binary_ne_grid(cagey_grid)
+    n = cagey_grid[0]
+    for cage in cagey_grid[1]:
+        sat_vals = []
+        scope = [var_array[(n * (y-1)) + (x-1)] for (y, x) in cage[1]]
+        opVar = Variable("Cage_op(" + str(cage[0]) + ":" + cage[2] + ":" + str(scope), ['+','-','*','/','?'])
+        con = Constraint("Cage(" + str(cage[0]) + ":" + cage[2] + ":" + str(scope), [opVar] + scope)
+        print(cage)
+        print(scope)
+        print(scope[1].domain())
+        if cage[2] == "+":
+            sat_vals = [["+"] + list(x) for x in itertools.product(scope[0].domain(),repeat=4) if sum(x) == cage[0]]
+            sat = []
+            sat = []
+            con.add_satisfying_tuples(sat_vals)
+        elif cage[2] == "*":
+            sat_vals = [["*"] + list(x) for x in itertools.product(scope[0].domain(),repeat=4) if prod(x) == cage[0]]
+            con.add_satisfying_tuples(sat_vals)
+        elif cage[2] == "-":
+            ndom = [x for x in scope[0].domain()] + [-x for x in scope[0].domain()]
+            print("ndom",ndom)
+            sat_vals = [["-"] + list(x) for x in itertools.product(ndom,repeat=4) if sum(x) == cage[0]]
+            con.add_satisfying_tuples(sat_vals)
+        elif cage[2] == "/":
+            ndom = [x for x in scope[0].domain()] + [1/x for x in scope[0].domain()]
+            print("ndom",ndom)
+            sat_vals = [["/"] + list(x) for x in itertools.product(ndom,repeat=4) if prod(x) == cage[0]]
+            con.add_satisfying_tuples(sat_vals)
+        elif cage[2] == "?":
+            pass
+        
+        print(sat_vals)
+        print("==================================a")
+
+
+    return (csp, var_array)
