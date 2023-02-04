@@ -118,7 +118,26 @@ def binary_ne_grid(cagey_grid):
 
 def nary_ad_grid(cagey_grid):
     ## IMPLEMENT
-    pass
+    var_array = [] #List to hold all the variables of the grid
+    n = cagey_grid[0] #Dimension of the grid
+    dom = [i for i in range(1, n + 1)] #Domain of the variables
+    sat_tuples = [x for x in itertools.permutations(range(1, n+1), n)]
+    arr = itertools.product(dom, dom)
+    var_array = [Variable("Cell({},{})".format(x,y), dom) for (x,y) in arr]
+    csp = CSP("nary_cagey", var_array)
+    for i in range(n):
+        rowc = var_array[i * n : (i+1) * n]
+        colc = [var_array[j] for j in range(i, n*n, n)]
+        for x in itertools.combinations(rowc, n):
+            con = Constraint("C({})".format(x), x)
+            con.add_satisfying_tuples(sat_tuples)
+            csp.add_constraint(con)
+        for x in itertools.combinations(colc, n):
+            con = Constraint("C({})".format(x), x)
+            con.add_satisfying_tuples(sat_tuples)
+            csp.add_constraint(con)
+
+    return csp, var_array
 
 def cagey_csp_model(cagey_grid):
     ## Implemented using binary_ne_grid
